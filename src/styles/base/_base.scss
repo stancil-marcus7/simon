@@ -1,0 +1,22 @@
+html {
+    //62.5 x 16 (rem) = 10; so we'll work with a base of 10
+    font-size: 62.5%
+}
+
+body {
+    text-align: center;
+    background-image: linear-gradient(to right, #FC466B , #3F5EFB);
+  }
+
+  .game-over {
+    background-image: none;
+    background-color: red;
+    opacity: 0.8;
+  }
+
+  .container {
+    display: block;
+    width: 50%;
+    margin: auto;
+  
+  }
