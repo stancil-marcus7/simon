@@ -1,6 +1,23 @@
 .header{
-font-family: 'Press Start 2P', cursive;
+  font-family: 'Press Start 2P', cursive;
   font-size: 3rem;
   margin:  5%;
-  color: #FEF2BF;
+  color: $light-yellow;
+  cursor: pointer;
+}
+
+.subheader{
+  font-family: 'Press Start 2P', cursive;
+  font-size: 2rem;
+  margin:  5%;
+  color: $light-yellow;
+  cursor: pointer;
+}
+
+.subheaderClicked{
+  font-family: 'Press Start 2P', cursive;
+  font-size: 2rem;
+  margin:  5%;
+  color: $red;
+  cursor: pointer;
 }
