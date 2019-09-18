@@ -4,7 +4,7 @@
   "private": true,
   "engines": {
     "npm": "6.10.2",
-    "node": "v12.7.0"
+    "node": "v12.7.0" 
   },
   "dependencies": {
     "node-sass": "^4.12.0",
