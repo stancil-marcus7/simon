@@ -227,8 +227,10 @@ repeatSequence () {
         this.setState(() => ({
           lastColor: currentColor
         }))
-        this.state.sounds[currentColor].play();
+        this.state.sounds[randomColor].pause();
+        this.state.sounds[randomColor].currentTime = 0;
         this.fadeInFadeOut();
+        this.state.sounds[currentColor].play();
       },100)
     } else {
       //makes sure the current iteration won't coincide with the next
@@ -238,7 +240,7 @@ repeatSequence () {
       if(!this.state.userIsWrong){
         setTimeout(()=>{
           this.handleNewSequence();
-        },500)
+        },100)
       }
 
       if (this.state.userIsWrong) {
