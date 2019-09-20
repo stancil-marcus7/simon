@@ -230,7 +230,7 @@ repeatSequence () {
       //makes sure the current iteration won't coincide with the next
       clearInterval(intervalRepeatSequence);
       
-      //if the user is wrong a new color is added to the game pattern
+      //if the user isn't wrong a new color is added to the game pattern
       if(!this.state.userIsWrong){
         setTimeout(()=>{
           this.handleNewSequence();
