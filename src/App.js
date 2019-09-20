@@ -64,8 +64,8 @@ class App extends React.Component{
     }));
       
 
-      this.state.sounds[color].pause();
-      this.state.sounds[color].currentTime = 0;
+      this.state.sounds[randomColor].pause();
+      this.state.sounds[randomColor].currentTime = 0;
       
       this.fadeInFadeOut();
       this.state.sounds[randomColor].play();
