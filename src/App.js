@@ -14,15 +14,26 @@ class App extends React.Component{
 
   state={
       colors: ["red","blue","green","yellow"],
+      //the pattern the game generates
       gamePattern: [],
+      //the pattern that the user inputs
       userPattern: [],
+      //used to indicate the current color in the sequence; used for fade in and fade out animation
       lastColor: "",
+      //keeps track of the current level
       level: 0,
+      //indicates whether game is over or not
       gameOver: false,
+      //indicates if game has started
       gameStarted: false,
+      //indicates when the user has input the wrong pattern
       userIsWrong: false,
+      //indicates when the game will allow the user to pick colors for their pattern
       readyForUserInput: false,
+      //used to track whether strict mode (if the user picks a wrong color the game resets) is on or not
       strictMode: false,
+      //used to see whether if a strict restart has occured; allows us to figure out whether the users pattern is incorrect when they
+      //get past level 1 
       strictRestart: false,
       sounds: {
         red: new Audio(red),
@@ -31,10 +42,13 @@ class App extends React.Component{
         yellow: new Audio(yellow),
         wrong: new Audio(wrong)
       },
+      //used to add light-up border animation
       pressed: '',
+      //used to apply fade in, fade out animation
       activeStyle: '',
   }
 
+  //Occurs when a new pattern is started and when a new color is added to the game pattern
   handleNewSequence = () => {
     console.log("[Handle New Sequence]")
     let randomColor = this.state.colors[Math.floor(Math.random() * 4)];
@@ -52,6 +66,7 @@ class App extends React.Component{
       this.state.sounds[randomColor].play();
       this.fadeInFadeOut();
 
+      //used for prevent user from picking colors while the sequence is being shown to them
       setTimeout(() => {
         this.setState({
           readyForUserInput: true,
@@ -60,8 +75,8 @@ class App extends React.Component{
       }, 500)
     }    
 
+//when the user picks an incorrect color, the background will change to red until this.state.gameOver is false ahain
 componentDidUpdate = () => {
-  // console.log("[Component Did Update]")
   if (this.state.gameOver){
     document.body.style.background = "red";
   } else {
@@ -69,13 +84,14 @@ componentDidUpdate = () => {
   }
 }
 
+//handles the fade in and fade out animations when the user is being shown the sequence they must replicate
 fadeInFadeOut = () => {
 
     this.setState({
       activeStyle: 'fadeOut ',
     })
 
-
+  //after half a second the fade in animation will occur
   setTimeout(() => {
     this.setState({
       activeStyle: 'fadeIn ',
@@ -88,7 +104,7 @@ handleUserInput(color){
   console.log("[handleUserInput]" + this.state.readyForUserInput)
   if (this.state.readyForUserInput){
 
-    //Prevent overlapping sounds if user clicks too early
+    //prevents overlapping sounds if user clicks too early
     this.state.sounds[color].pause();
     this.state.sounds[color].currentTime = 0;
 
@@ -97,6 +113,7 @@ handleUserInput(color){
       pressed: color
     }))
 
+    //the light up animation is turned off .10 seconds after the user picks a color
     setTimeout(() => {
       this.setState(() => ({
         pressed: '',
@@ -107,23 +124,24 @@ handleUserInput(color){
     
     setTimeout(() => {
       let index = this.state.userPattern.length - 1;
+      //compares elements in regular mode
       if ((this.state.userPattern[index] !== this.state.gamePattern[index]) && !this.state.strictMode) {
-        console.log("Comparing elements")
         this.setState({
           readyForUserInput: false,
         })
         this.verifyUserMoves()
       }
 
+      //compares elements in both strict mode and regular mode after user gets first color of pattern correct
       if ((this.state.userPattern.length === this.state.gamePattern.length) && !this.state.strictRestart) {
-        //disable buttons when user finishes turn
-        console.log("Not supposed to be here");
+        //disables buttons when user finishes their turn
         this.verifyUserMoves()
         this.setState({
           readyForUserInput: false,
         });
       }
       
+      //used to validate patterns when strict mode is turned on
       if (this.state.strictMode){
         let index = this.state.userPattern.length - 1;
         if (this.state.userPattern[index] != this.state.gamePattern[index])
@@ -139,6 +157,9 @@ handleUserInput(color){
   }
 }
 
+//if regular mode is on and the user is incorrect or correct, the sequence will just be replayed;
+//the wrongAnswer() function will be used later in repeatSequence to determine whether a new color should
+//be added to the sequence or not
 verifyUserMoves = () => {
   console.log("[Verified]")
   if (this.state.userPattern.join() === this.state.gamePattern.join()){
@@ -170,6 +191,8 @@ wrongAnswer = () => {
 
   this.state.sounds["wrong"].play();
 
+  //a delay is used to so that the header will return back to "Click me to begin game" or the current level of the game
+  //and to return the background to normal
   setTimeout(() => {
     this.setState(() => ({
       gameOver: false,
@@ -186,6 +209,7 @@ repeatSequence () {
 
   var index = -1;
 
+  //this will iterate through the colors and use the fadeInFadeOut function to apply the animations
   intervalRepeatSequence = setInterval(() => {
     index++;
     this.setState(() => ({
@@ -203,8 +227,10 @@ repeatSequence () {
         this.fadeInFadeOut();
       },100)
     } else {
+      //makes sure the current iteration won't coincide with the next
       clearInterval(intervalRepeatSequence);
       
+      //if the user is wrong a new color is added to the game pattern
       if(!this.state.userIsWrong){
         setTimeout(()=>{
           this.handleNewSequence();
@@ -221,6 +247,7 @@ repeatSequence () {
   },1000)
 }
 
+//resets the game
 resetGame = () => {
   console.log("[Reset Game]")
   clearInterval(intervalRepeatSequence);
@@ -237,6 +264,7 @@ resetGame = () => {
   }))
 }
 
+//turns on strict mode
 handleStrictToggle = () => {
   console.log("[Toggle Strict]")
   this.resetGame();
