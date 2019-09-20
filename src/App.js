@@ -227,8 +227,8 @@ repeatSequence () {
         this.setState(() => ({
           lastColor: currentColor
         }))
-        this.state.sounds[randomColor].pause();
-        this.state.sounds[randomColor].currentTime = 0;
+        this.state.sounds[currentColor].pause();
+        this.state.sounds[currentColor].currentTime = 0;
         this.fadeInFadeOut();
         this.state.sounds[currentColor].play();
       },100)
