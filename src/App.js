@@ -63,9 +63,12 @@ class App extends React.Component{
       gameStarted: true
     }));
       
-      this.state.sounds[randomColor].play();
-      this.fadeInFadeOut();
 
+      this.state.sounds[color].pause();
+      this.state.sounds[color].currentTime = 0;
+      
+      this.fadeInFadeOut();
+      this.state.sounds[randomColor].play();
       //used for prevent user from picking colors while the sequence is being shown to them
       setTimeout(() => {
         this.setState({
