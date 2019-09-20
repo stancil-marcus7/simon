@@ -68,6 +68,7 @@ class App extends React.Component{
       this.state.sounds[randomColor].currentTime = 0;
       
       this.fadeInFadeOut();
+
       this.state.sounds[randomColor].play();
       //used for prevent user from picking colors while the sequence is being shown to them
       setTimeout(() => {
@@ -228,7 +229,7 @@ repeatSequence () {
         }))
         this.state.sounds[currentColor].play();
         this.fadeInFadeOut();
-      },500)
+      },100)
     } else {
       //makes sure the current iteration won't coincide with the next
       clearInterval(intervalRepeatSequence);
