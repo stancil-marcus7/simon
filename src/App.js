@@ -62,14 +62,10 @@ class App extends React.Component{
       level: currentLevel,
       gameStarted: true
     }));
+    
       
+      this.fadeInFadeOut(randomColor);
 
-      this.state.sounds[randomColor].pause();
-      this.state.sounds[randomColor].currentTime = 0;
-      
-      this.fadeInFadeOut();
-
-      this.state.sounds[randomColor].play();
       //used for prevent user from picking colors while the sequence is being shown to them
       setTimeout(() => {
         this.setState({
@@ -89,7 +85,7 @@ componentDidUpdate = () => {
 }
 
 //handles the fade in and fade out animations when the user is being shown the sequence they must replicate
-fadeInFadeOut = () => {
+fadeInFadeOut = (color) => {
 
     this.setState({
       activeStyle: 'fadeOut ',
@@ -102,6 +98,7 @@ fadeInFadeOut = () => {
       lastColor: ''
     })
   }, 500)
+  this.state.sounds[color].play();
 }
   
 handleUserInput(color){
@@ -227,10 +224,7 @@ repeatSequence () {
         this.setState(() => ({
           lastColor: currentColor
         }))
-        this.state.sounds[currentColor].pause();
-        this.state.sounds[currentColor].currentTime = 0;
-        this.fadeInFadeOut();
-        this.state.sounds[currentColor].play();
+        this.fadeInFadeOut(currentColor);
       },100)
     } else {
       //makes sure the current iteration won't coincide with the next
