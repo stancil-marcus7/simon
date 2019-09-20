@@ -237,7 +237,7 @@ repeatSequence () {
       if(!this.state.userIsWrong){
         setTimeout(()=>{
           this.handleNewSequence();
-        },100)
+        },500)
       }
 
       if (this.state.userIsWrong) {
