@@ -228,7 +228,7 @@ repeatSequence () {
         }))
         this.state.sounds[currentColor].play();
         this.fadeInFadeOut();
-      },100)
+      },500)
     } else {
       //makes sure the current iteration won't coincide with the next
       clearInterval(intervalRepeatSequence);
