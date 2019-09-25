@@ -91,7 +91,7 @@ handleInput = () => {
     }
   }, 100)
     
-    //used to validate patterns when strict mode is turned on
+    // used to validate patterns when strict mode is turned on
     setTimeout(() => {
       if (this.props.strictMode){
         let index = this.props.userPattern.length - 1;
@@ -106,9 +106,9 @@ handleInput = () => {
     },50)
 }
 
-//if regular mode is on and the user is incorrect or correct, the sequence will just be replayed;
-//the userIsWrong property will be used later in repeatSequence to determine whether a new color should
-//be added to the sequence or not
+// if regular mode is on and the user is incorrect or correct, the sequence will just be replayed;
+// the userIsWrong property will be used later in repeatSequence to determine whether a new color should
+// be added to the sequence or not
 verifyUserMoves = () => {
   if (this.props.userPattern.join() === this.props.gamePattern.join()){
     this.props.dispatch(updateLevel());
@@ -144,7 +144,7 @@ repeatSequence () {
 
   var index = -1;
 
-  //this will iterate through the colors and use the fadeInFadeOut function to apply the animations
+  // this will iterate through the colors and use the fadeInFadeOut function to apply the animations
   intervalRepeatSequence = setInterval(() => {
     index++;
     this.props.dispatch(updateLastColor());
@@ -175,14 +175,14 @@ repeatSequence () {
   },1000)
 }
 
-//resets the game
+// resets the game
 resetGame = () => {
   clearInterval(intervalRepeatSequence);
   this.props.dispatch(resetGame());
   
 }
 
-//turns on strict mode
+// turns on strict mode
 handleStrictToggle = () => {
   this.resetGame();
   this.props.dispatch(toggleSrtictMode());
