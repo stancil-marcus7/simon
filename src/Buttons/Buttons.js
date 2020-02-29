@@ -1,26 +1,28 @@
-import React from 'react';
-import Button from '../Button'
+import React, {useContext} from 'react';
+import Button from '../Button';
+import AppContext from '../context/app-context'
 
 // Just a presentational component which contains the buttons
-const Buttons = (props) => {
+const Buttons = React.memo(() => {
+    const {colors, sounds, handleInput} = useContext(AppContext);
     return (
         <div>
             <div>
-                {props.colors.slice(0,2).map(color => {
+                {colors.slice(0,2).map(color => {
                     return(
-                        <Button id={color} key={color} sound={props.sounds[color]} handleInput={props.handleInput}/>
+                        <Button id={color} key={color} sound={sounds[color]} handleInput={handleInput}/>
                     )
                 })}
             </div>
             <div>
-                {props.colors.slice(2,4).map(color => {
+                {colors.slice(2,4).map(color => {
                     return(
-                        <Button id={color} key={color} sound={props.sounds[color]} handleInput={props.handleInput}/>
+                        <Button id={color} key={color} sound={sounds[color]} handleInput={handleInput}/>
                     )
                 })}
             </div>
         </div>
     )
-}
+})
 
 export default Buttons;

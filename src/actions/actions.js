@@ -8,9 +8,9 @@ export const updateLastColor = (color = '') => ({
     color
 })
 
-export const updateUserPattern = (color = '') => ({
+export const updateUserPattern = (id  = '') => ({
     type: 'UPDATE_USER_PATTERN',
-    color
+    id
 })
 
 export const updateGamePattern = (color = '') => ({
@@ -31,7 +31,7 @@ export const turnOffReadyForUserInput = () => ({
     type: 'TURN_OFF_READY_FOR_USER_INPUT'
 })
 
-export const resetGame = () => ({
+export const resetSimonGame = () => ({
     type: 'RESET_GAME'
 })
 
@@ -40,8 +40,8 @@ export const updateLevel = ({level = 1} = {}) => ({
     level
 })
 
-export const setLevel = ({level} = {}) => ({
-    type: 'SET_LEVEL',
+export const setPlayerLevel = (level = 0) => ({
+    type: 'SET_PLAYER_LEVEL',
     level
 })
 

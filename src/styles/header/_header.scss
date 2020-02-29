@@ -1,23 +1,35 @@
-.header{
+@mixin header{
   font-family: 'Press Start 2P', cursive;
   font-size: 4rem;
-  margin:  5%;
   color: $light-yellow;
   cursor: pointer;
+}
+
+.header{
+  @include header
 }
 
 .subheader{
   font-family: 'Press Start 2P', cursive;
   font-size: 2rem;
-  margin:  5%;
+  display: inline-block;
   color: $light-yellow;
   cursor: pointer;
+}
+
+p {
+  display: inline-block;
 }
 
 .subheaderClicked{
   font-family: 'Press Start 2P', cursive;
   font-size: 2rem;
-  margin:  5%;
   color: $red;
   cursor: pointer;
+}
+
+.subheaders--section{
+  display: flex;
+  flex-direction: column;
+  
 }

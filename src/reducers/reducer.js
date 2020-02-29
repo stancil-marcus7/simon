@@ -1,31 +1,4 @@
-const simonReduceDefaultState = {
-    gamePattern: [],
-    //the pattern that the user inputs
-    userPattern: [],
-    //used to indicate the current color in the sequence; used for fade in and fade out animation
-    lastColor: "",
-    //keeps track of the current level
-    level: 0,
-    //indicates whether game is over or not
-    gameOver: false,
-    //indicates if game has started
-    gameStarted: false,
-    //indicates when the user has input the wrong pattern
-    userIsWrong: false,
-    //indicates when the game will allow the user to pick colors for their pattern
-    readyForUserInput: false,
-    //used to track whether strict mode (if the user picks a wrong color the game resets) is on or not
-    strictMode: false,
-    //used to see whether if a strict restart has occured; allows us to figure out whether the users pattern is incorrect when they
-    //get past level 1 
-    strictRestart: false,
-    //used to add light-up border animation
-    pressed: '',
-    //used to apply fade in, fade out animation
-    activeStyle: '',
-}
-
-export default (state = simonReduceDefaultState, action) => {
+export default (state, action) => {
     switch (action.type) {
         case 'SET_ACTIVE_STYLE':
             return {
@@ -40,7 +13,7 @@ export default (state = simonReduceDefaultState, action) => {
         case 'UPDATE_USER_PATTERN':
             return {
                 ...state,
-                userPattern: [...state.userPattern, action.color]
+                userPattern: [...state.userPattern, action.id]
             }
         case 'UPDATE_GAME_PATTERN':
             return {
@@ -48,11 +21,13 @@ export default (state = simonReduceDefaultState, action) => {
                 gamePattern: [...state.gamePattern, action.color]
             }
         case 'TOGGLE_PRESSED':
+            console.log(action.color)
             return {
                 ...state,
                 pressed: action.color
             }
         case 'TURN_ON_READY_FOR_USER_INPUT':
+            console.log(`here`)
             return {
                 ...state,
                 readyForUserInput: true
@@ -110,7 +85,7 @@ export default (state = simonReduceDefaultState, action) => {
                 ...state,
                 userPattern: []
             }
-        case 'SET_LEVEL':
+        case 'SET_PLAYER_LEVEL':
             return{
                 ...state,
                 level: action.level

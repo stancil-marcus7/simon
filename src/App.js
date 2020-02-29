@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {useState, useReducer, useEffect, useCallback} from 'react';
+import simonReducer from './reducers/reducer';
+import AppContext from './context/app-context'
 import './App.css';
 import './styles/styles.scss';
 import red from './sounds/red.mp3'
@@ -7,222 +9,248 @@ import green from './sounds/green.mp3'
 import yellow from './sounds/yellow.mp3'
 import wrong from './sounds/wrong.mp3'
 import Buttons from './Buttons/Buttons'
-import { connect } from 'react-redux';
-import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, setLevel } from './actions/actions'
+import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetSimonGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, togglePressed } from './actions/actions'
 
-var intervalRepeatSequence;
 
-class App extends React.Component{
+const App = React.memo(() => {
+  const colorsSet = useState(["red","blue","green","yellow"]);
+  const soundsSet = useState({
+    red: new Audio(red),
+    blue: new Audio(blue),
+    green: new Audio(green),
+    yellow: new Audio(yellow),
+    wrong: new Audio(wrong)
+  });
 
-  constructor(props){
-    super(props)
-  }
+  const colors = colorsSet[0];
+  const sounds = soundsSet[0]
 
-  state={
-      colors: ["red","blue","green","yellow"],
-      sounds: {
-        red: new Audio(red),
-        blue: new Audio(blue),
-        green: new Audio(green),
-        yellow: new Audio(yellow),
-        wrong: new Audio(wrong)
-      }
-  }
-
-  //Occurs when a new pattern is started and when a new color is added to the game pattern
-  handleNewSequence = () => {
-    let randomColor = this.state.colors[Math.floor(Math.random() * 4)];
-
-    const currentLevel = this.props.gameStarted ? this.props.level : this.props.level + 1;
-   
-    //Adding new color to game pattern
-    this.props.dispatch(updateGamePattern(randomColor));
-    this.props.dispatch(updateLastColor(randomColor));
-    this.props.dispatch(setLevel({level: currentLevel}));
-    if (!this.props.gameStarted){
-      this.props.dispatch(toggleGameStarted());
-    }
-
-    this.fadeInFadeOut(randomColor);
-
-    //used for prevent user from picking colors while the sequence is being shown to them
-    setTimeout(() => {
-      this.props.dispatch(turnOnReadyForUserInput())
-    }, 500)
-    }    
-
-//when the user picks an incorrect color, the background will change to red until this.state.gameOver is false ahain
-componentDidUpdate = () => {
-  if (this.props.gameOver){
-    document.body.style.background = "red";
-  } else {
-    document.body.style.background = "linear-gradient(to right, #FC466B , #3F5EFB)"
-  }
+  const defaultState = {
+    gamePattern: [],
+    //the pattern that the user inputs
+    userPattern: [],
+    //used to indicate the current color in the sequence; used for fade in and fade out animation
+    lastColor: "",
+    //keeps track of the current level
+    level: 0,
+    //indicates whether game is over or not
+    gameOver: false,
+    //indicates if game has started
+    gameStarted: false,
+    //indicates when the user has input the wrong pattern
+    userIsWrong: false,
+    //indicates when the game will allow the user to pick colors for their pattern
+    readyForUserInput: false,
+    //used to track whether strict mode (if the user picks a wrong color the game resets) is on or not
+    strictMode: false,
+    //used to add light-up border animation
+    pressed: '',
+    //used to apply fade in, fade out animation
+    activeStyle: '',
 }
 
-//handles the fade in and fade out animations when the user is being shown the sequence they must replicate
-fadeInFadeOut = (color) => {
+const [state, dispatch] = useReducer(simonReducer, defaultState);
+const [repeatSequence, setRepeatSequence] = useState(false)
 
-  this.props.dispatch(setActiveStyle('fadeOut '));
+const handleNewSequence = useCallback(() => {
+  let randomColor = colors[Math.floor(Math.random() * 4)];
 
+  dispatch(updateGamePattern(randomColor))
+  dispatch(updateLastColor(randomColor));
+  sounds[randomColor].play()
+
+  // this.fadeInFadeOut(randomColor);
+  fadeInFadeOut();
+  //used for prevent user from picking colors while the sequence is being shown to them
+  setTimeout(() => {
+    dispatch(turnOnReadyForUserInput())
+  }, 500)
+},[colors, sounds])
+
+useEffect(() => {
+  if (state.gameStarted && state.level === 0){
+    dispatch(updateLevel())
+    handleNewSequence()
+  }
+},[state.gameStarted, state.level, handleNewSequence])
+
+useEffect(() => { 
+  if (state.userPattern.length > 0){
+    let lastColor = state.userPattern[state.userPattern.length - 1]
+  sounds[lastColor].pause();
+  sounds[lastColor].currentTime = 0;
+  dispatch(togglePressed(lastColor))
+  setTimeout(() => {
+      dispatch(togglePressed())
+  },200)
+  sounds[lastColor].play();
+}
+},[state.userPattern, sounds])
+
+const fadeInFadeOut = () => {
+  dispatch(setActiveStyle('fadeOut '));
   //after half a second the fade in animation will occur
   setTimeout(() => {
-    this.props.dispatch(setActiveStyle('fadeIn '));
-    this.props.dispatch(updateLastColor())
+    dispatch(setActiveStyle('fadeIn '));
+    dispatch(updateLastColor());
   }, 500)
-  this.state.sounds[color].play();
-}
-  
-handleInput = () => { 
-  let initialCheck = setTimeout(() => {
-    let index = this.props.userPattern.length - 1;
-    //compares elements in regular mode
-    if ((this.props.userPattern[index] !== this.props.gamePattern[index]) && !this.props.strictMode) {
-      this.props.dispatch(turnOffReadyForUserInput());
-      this.verifyUserMoves();
-    }
+} 
 
-    // compares elements in both strict mode and regular mode when the user has input all the colors; basically used to check if the user 
-    // got the last in the pattern correct, since they've gotten the rest of the pattern correct
-    if ((this.props.userPattern.length === this.props.gamePattern.length) && !this.props.strictRestart) {
-      //disables buttons when user finishes their turn
-        this.props.dispatch(turnOffReadyForUserInput());
-        this.verifyUserMoves();
-    }
-  }, 100)
-    
-    // used to validate patterns when strict mode is turned on
-    setTimeout(() => {
-      if (this.props.strictMode){
-        let index = this.props.userPattern.length - 1;
-        if (this.props.userPattern[index] !== this.props.gamePattern[index])
+useEffect(() => {
+  if(state.userPattern){
+    const initialCheck = setTimeout(() => {
+      let index = state.userPattern.length - 1;
+      console.log(state.gamePattern);
+      console.log(state.userPattern)
+      if ((state.userPattern[index] !== state.gamePattern[index])) {
+        dispatch(turnOffReadyForUserInput());
+      }
+  
+      if ((state.userPattern.length === state.gamePattern.length)) {
+        //disables buttons when user finishes their turn
+        dispatch(turnOffReadyForUserInput());
+  
+      }
+    },100)
+
+    const strictCheck = setTimeout(() => {
+      if (state.strictMode){
+        let index = state.userPattern.length - 1;
+        if (state.userPattern[index] !== state.gamePattern[index])
         {
           // Prevents the initial check from occuring because at this point we know the user has already input the incorrect pattern
           clearTimeout(initialCheck);
-          this.props.dispatch(turnOffReadyForUserInput());
-          this.verifyUserMoves();
+          dispatch(turnOffReadyForUserInput());
         }
       }
     },50)
-}
 
-// if regular mode is on and the user is incorrect or correct, the sequence will just be replayed;
-// the userIsWrong property will be used later in repeatSequence to determine whether a new color should
-// be added to the sequence or not
-verifyUserMoves = () => {
-  if (this.props.userPattern.join() === this.props.gamePattern.join()){
-    this.props.dispatch(updateLevel());
-    this.repeatSequence();
-  } else {
-    if (this.props.strictMode){
-      this.wrongAnswer()
+    return () => {
+      clearTimeout(initialCheck)
+      clearTimeout(strictCheck)
+    }
+  }
+},[state.userPattern, state.strictMode, state.gamePattern])
+
+const wrongAnswer = useCallback(() => {
+  dispatch(toggleGameOver());
+    sounds['wrong'].play();
+    if (state.strictMode){
       setTimeout(() => {
-        this.resetGame();
-      },500)
-    } else {
-      this.wrongAnswer();
-      this.repeatSequence();
+      resetGame()
+    }, 500)} else {
+      setRepeatSequence(repeatSequence => !repeatSequence)
     }
+},[sounds, state.strictMode])
+
+const verifyUserMoves = useCallback(() => {
+  if(state.userPattern.join() === state.gamePattern.join()){
+    console.log('update level')
+    dispatch(updateLevel());
+    setRepeatSequence(true);
+  } else {
+    wrongAnswer();
   }
-}
+},[state.gamePattern, state.userPattern, wrongAnswer])
 
-wrongAnswer = () => {
-  this.props.dispatch(toggleGameOver());
+useEffect(() => {
+  if (!state.readyForUserInput && state.userPattern.length > 0){
+    verifyUserMoves();
+  }
+},[state.readyForUserInput, verifyUserMoves,  state.userPattern.length])
 
-  this.state.sounds["wrong"].play();
+useEffect(() => {
+  if (state.gameOver){
+    document.body.style.background = "red";
+    dispatch(turnOnUserIsWrong());
+    const wrongTimeout = setTimeout(() => {
+      dispatch(toggleGameOver());
+    }, 500)
 
-  //a delay is used to so that the header will return back to "Click me to begin game" or the current level of the game
-  //and to return the background to normal
-  setTimeout(() => {
-    this.props.dispatch(toggleGameOver());
-    this.props.dispatch(turnOnUserIsWrong());
-  },500)
-}
+    return () => {
+      clearTimeout(wrongTimeout);
+    }
+  } else {
+    document.body.style.background = "linear-gradient(to right, #FC466B , #3F5EFB)"
+  }
+},[state.gameOver])
 
-repeatSequence () {
-  this.props.dispatch(emptyUserPattern())
 
-  var index = -1;
+useEffect(() => {
+  if (repeatSequence){
+    console.log(`repeatSequence ` + repeatSequence)
+    dispatch(emptyUserPattern());
+  }
+},[repeatSequence])
 
-  // this will iterate through the colors and use the fadeInFadeOut function to apply the animations
-  intervalRepeatSequence = setInterval(() => {
-    index++;
-    this.props.dispatch(updateLastColor());
-
-    if (index <= this.props.gamePattern.length -1){
-      let currentColor = this.props.gamePattern[index];
-
-      setTimeout(()=> {
-        this.props.dispatch(updateLastColor(currentColor));
-        this.fadeInFadeOut(currentColor);
-      },100)
-    } else {
-      //makes sure the current iteration won't coincide with the next
-      clearInterval(intervalRepeatSequence);
-      
-      //if the user isn't wrong a new color is added to the game pattern
-      if(!this.props.userIsWrong){
-        setTimeout(()=>{
-          this.handleNewSequence();
+useEffect(() => {
+  if (state.userPattern.length === 0 && repeatSequence){
+    let index = -1;
+    const intervalRepeatSequence = setInterval(() => {
+      index++;
+      dispatch(updateLastColor());
+      if (index <= state.gamePattern.length - 1){
+        let currentColor = state.gamePattern[index];
+        
+        setTimeout(() => {
+          dispatch(updateLastColor(currentColor));
+          sounds[currentColor].play();
+          fadeInFadeOut();
         },100)
+      } else {
+          clearInterval(intervalRepeatSequence);
+          if (!state.userIsWrong){
+            setTimeout(() => {
+              handleNewSequence();
+            },100)
+          }
+          if (state.userIsWrong) {
+            dispatch(turnOnReadyForUserInput());
+            dispatch(turnOffUserIsWrong());
+          }
       }
+    },1000)
+    setRepeatSequence(repeatSequence => !repeatSequence)
+  }
+},[state.userPattern, repeatSequence, state.gamePattern, state.lastColor, handleNewSequence, state.userIsWrong, sounds])
 
-      if (this.props.userIsWrong) {
-        this.props.dispatch(turnOnReadyForUserInput());
-        this.props.dispatch(turnOffUserIsWrong());
-      }
-    }
-  },1000)
+const resetGame = () => {
+  dispatch(resetSimonGame());
 }
 
-// resets the game
-resetGame = () => {
-  clearInterval(intervalRepeatSequence);
-  this.props.dispatch(resetGame());
-  
+const handleStrictToggle = () =>{
+  resetGame();
+  dispatch(toggleSrtictMode())
 }
 
-// turns on strict mode
-handleStrictToggle = () => {
-  this.resetGame();
-  this.props.dispatch(toggleSrtictMode());
-}
-
-  render(){
+console.log(colors)
     return(
-      <div 
-        className={!this.props.readyForUserInput && this.props.level > 0 ? "pointer-events-disabled" : null}>
-          <h1 
-            className="header"
-            onClick={this.props.level === 0 ? this.handleNewSequence : null}>{!this.props.gameStarted && this.props.level === 0 ? "Click me to begin game" : this.props.gameStarted && this.props.gameOver ? "Wrong. Please try again" : this.props.level > 0 ? "Level: " + this.props.level : null}</h1>
-          <p 
-            className={!this.props.strictMode ? "subheader" : "subheaderClicked"} 
-            onClick={this.handleStrictToggle}>Strict Mode</p>
-          <p className={"subheader"} onClick={this.resetGame}>Reset</p>
-          <div>
-            <div>
-              <Buttons colors={this.state.colors} sounds={this.state.sounds} handleInput={this.handleInput}/>
+      <AppContext.Provider value={{state, dispatch, sounds, colors}}>
+        <div
+          className={!state.readyForUserInput && state.level > 0 ? "pointer-events-disabled" : null}>
+            <h1 
+              className={state.level === 0 ? "header" : "header pointer-events-disabled"}
+              onClick={state.level === 0 ? () => {dispatch(toggleGameStarted())} : null}>{
+                !state.gameStarted && state.level === 0 ? 
+                "Click me to begin game" : 
+                state.gameStarted && state.gameOver ? 
+                "Wrong. Please try again" : 
+                state.level > 0 
+                ? "Level: " + state.level : 
+                "Click me to begin game"}</h1>
+            <div className="subheaders--section">
+              <p 
+                onClick={handleStrictToggle}
+                className={!state.strictMode ? "subheader" : "subheaderClicked"} 
+                >Strict Mode</p>
+              <p 
+              className={"subheader"}
+              onClick={resetGame}>Reset</p>
             </div>
-          </div>
-      </div>
+            <Buttons/>
+        </div>
+      </AppContext.Provider>
     )
-  }
-}
+  })
 
-const mapStateToProps = (state) => {
-  return {
-      lastColor: state.lastColor,
-      readyForUserInput: state.readyForUserInput,
-      level: state.level,
-      gameStarted: state.gameStarted,
-      gamePattern: state.gamePattern,
-      userPattern: state.userPattern,
-      userIsWrong: state.userIsWrong,
-      strictMode: state.strictMode,
-      strictRestart: state.strictRestart,
-      gameOver: state.gameOver
-      
-  }
-}
-
-export default connect(mapStateToProps)(App);
+export default App;
