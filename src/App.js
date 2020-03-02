@@ -2,14 +2,16 @@ import React, {useState, useReducer, useEffect, useCallback} from 'react';
 import simonReducer from './reducers/reducer';
 import AppContext from './context/app-context'
 import './App.css';
-import './styles/styles.scss';
 import red from './sounds/red.mp3'
 import blue from './sounds/blue.mp3'
 import green from './sounds/green.mp3'
 import yellow from './sounds/yellow.mp3'
 import wrong from './sounds/wrong.mp3'
-import Buttons from './Buttons/Buttons'
+import Buttons from './components/Buttons/Buttons'
+import Navbar from './components/Navigation/Navbar'
+import ScoreboardModal from './ScoreboardModal'
 import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetSimonGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, togglePressed } from './actions/actions'
+import Scoreboard from './ScoreboardModal';
 
 
 const App = React.memo(() => {
@@ -22,6 +24,7 @@ const App = React.memo(() => {
     wrong: new Audio(wrong)
   });
 
+  const [showModal, setShowModal] = useState(false);
   const colors = colorsSet[0];
   const sounds = soundsSet[0]
 
@@ -51,6 +54,16 @@ const App = React.memo(() => {
 
 const [state, dispatch] = useReducer(simonReducer, defaultState);
 const [repeatSequence, setRepeatSequence] = useState(false)
+
+const handleShowModal = () => {
+  setShowModal(true);
+}
+
+const handleCloseModal = () => {
+  setShowModal(false)
+}
+
+
 
 const handleNewSequence = useCallback(() => {
   let randomColor = colors[Math.floor(Math.random() * 4)];
@@ -223,9 +236,21 @@ const handleStrictToggle = () =>{
   dispatch(toggleSrtictMode())
 }
 
+const showDropDown = () => {
+  var x = document.getElementsByClassName("topnav");
+  if (x.className === "topnav") {
+    console.log('here')
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+
 console.log(colors)
     return(
       <AppContext.Provider value={{state, dispatch, sounds, colors}}>
+        <ScoreboardModal close={handleCloseModal} showModal={showModal}/>
+        <Navbar show={handleShowModal}/>
         <div
           className={!state.readyForUserInput && state.level > 0 ? "pointer-events-disabled" : null}>
             <h1 

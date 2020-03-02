@@ -1,7 +1,5 @@
 @mixin header{
-  font-family: 'Press Start 2P', cursive;
   font-size: 4rem;
-  color: $light-yellow;
   cursor: pointer;
 }
 
@@ -10,10 +8,8 @@
 }
 
 .subheader{
-  font-family: 'Press Start 2P', cursive;
   font-size: 2rem;
   display: inline-block;
-  color: $light-yellow;
   cursor: pointer;
 }
 
@@ -22,7 +18,6 @@ p {
 }
 
 .subheaderClicked{
-  font-family: 'Press Start 2P', cursive;
   font-size: 2rem;
   color: $red;
   cursor: pointer;

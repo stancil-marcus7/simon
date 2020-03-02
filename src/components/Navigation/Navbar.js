@@ -1,27 +1,40 @@
-import React, {useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux'
-import Nav from "react-bootstrap/Button";
+import React, {useState} from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FaAlignRight } from 'react-icons/fa'
 
 
 
-const Navbar = ({showModal}) => {
-    const login = useSelector(state => state.login);
-    const dispatch = useDispatch();
+const Navbar = ({show}) => {
+    const [toggleHamburger, setToggleHamburger] = useState(false);
 
-    useEffect(() => {
-        dispatch({type:'GET_LOGIN'});
-    },[dispatch])
+const handleHamburgerToggle = () => {
+    setToggleHamburger(toggleHamburger => !toggleHamburger)
+}
 
+const li = [
+    {
+        link: "#",
+        text:"Login"
+    },
+    {
+        link: "#",
+        text:"Scoreboard"
+    }
+];
     return (
-        <Nav>
-            <Nav.Item>
-                <Nav.Link onClick={!!showModal}>{!login ? "Login" : "Log Out"}</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-                <Nav.Link>Scoreboard</Nav.Link>
-            </Nav.Item>
-        </Nav>
-        
+        <>
+        <div className="navbar">  
+            <button onClick={handleHamburgerToggle}>
+                <FaAlignRight/>
+            </button>
+            <ul className={toggleHamburger? "links show-nav" : "links"}>
+                {li.map((oblink, i) => {
+                    return (<li key={i}><a style={{cursor: "pointer"}}>{oblink.text}</a></li>)
+                })}
+                
+            </ul>
+        </div>    
+        </>
     )
 }
 
