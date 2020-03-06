@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import axios from './axios'
 
-const ScoreboardModal = ({close, showModal}) => {
+const ScoreboardModal = React.memo(({close, showModal}) => {
 
     const modalClass = showModal ? "modal display-block" : "modal display-none"
 
@@ -57,14 +57,13 @@ const ScoreboardModal = ({close, showModal}) => {
         //     <button onClick={getMoreScores}>See more scores</button>
         // </div>
         <div className={modalClass}>
-            
             <section className="modal-main">
-            <a onClick={close}><FontAwesomeIcon icon="times" size="lg"/></a>
-                <br></br>
-                This is the modal
-            </section>
+                <button className="close-button" onClick={close}><FontAwesomeIcon icon="times" size="lg"/></button>
+                    <br></br>
+                    This is the modal
+                </section>
         </div>
     )
-}
+})
 
 export default ScoreboardModal;

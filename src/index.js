@@ -5,6 +5,7 @@ import 'normalize.css/normalize.css'
 import './styles/styles.scss';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faTimes, faBars} from '@fortawesome/free-solid-svg-icons'
+
 import * as serviceWorker from './serviceWorker';
 
 library.add(faUser, faTimes, faBars);
