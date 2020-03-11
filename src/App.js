@@ -10,8 +10,9 @@ import wrong from './sounds/wrong.mp3'
 import Buttons from './components/Buttons/Buttons'
 import Navbar from './components/Navigation/Navbar'
 import ScoreboardModal from './components/Modals/ScoreboardModal';
-import LoginModal from './components/Modals/LoginModal'
-import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetSimonGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, togglePressed } from './actions/actions'
+import LoginModal from './components/Modals/LoginModal';
+import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetSimonGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, togglePressed } from './actions/actions';
+import axios from './axios'
 
 const App = React.memo(() => {
   const colorsSet = useState(["red","blue","green","yellow"]);
@@ -186,13 +187,31 @@ useEffect(() => {
       dispatch(toggleGameOver());
     }, 500)
 
+    let mode = 'regular'
+    let score = state.level
+    if (state.strictMode){
+      mode = 'strict'
+    }
+
+    const user={
+        mode,
+        score
+    }
+
+    axios.post('/submit', user)
+      .then(response => {
+        console.log('successfully updated player', response);
+      }, error => {
+        console.log('did not successfully update player', error)
+      })
+
     return () => {
       clearTimeout(wrongTimeout);
     }
   } else {
     document.body.style.background = "linear-gradient(to right, #FC466B , #3F5EFB)"
   }
-},[state.gameOver])
+},[state.gameOver, state.strictMode])
 
 
 useEffect(() => {

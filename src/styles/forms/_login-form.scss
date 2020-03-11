@@ -1,0 +1,27 @@
+.login-form{
+    margin: auto;
+    text-align: center;
+    width: 250px;
+    input{
+        width: 100%
+    }
+}
+
+input{
+    border-radius: 5px;
+    border: 2px solid black;
+    
+    padding: 4px;
+}
+
+.click{
+    cursor: pointer;
+        &:hover{
+        color: white;
+        background: black;
+    }
+}
+
+label{
+    float: left;
+}
