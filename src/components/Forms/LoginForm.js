@@ -51,7 +51,7 @@ const LoginForm = React.memo(({loginSubmit, setUsername, setPassword, registrati
                     <span><FontAwesomeIcon icon={['fab', 'facebook-f']}/></span> Sign in with Facebook
                 </a>
             </div><br/><br/>
-            <input onClick={toggleNewUser} className="click" type="button" value="Don't have an account? Sign Up!"/>
+            <input onClick={toggleNewUser} className="click" type="button" value={!newUser ? "Don't have an account? Sign Up!" : "Already have an account? Login"}/>
         </div>
     )
 })

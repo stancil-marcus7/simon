@@ -1,5 +1,6 @@
 import React, {useState, useReducer, useEffect, useCallback} from 'react';
 import simonReducer from './reducers/reducer';
+import userReducer from './reducers/userReducer'
 import AppContext from './context/app-context'
 import './App.css';
 import red from './sounds/red.mp3'
@@ -53,8 +54,18 @@ const App = React.memo(() => {
     activeStyle: '',
 }
 
+const userDefaultState = {
+  loggedIn: false,
+  username: '',
+  regScore: 0,
+  strictScore: 0
+}
+
 const [state, dispatch] = useReducer(simonReducer, defaultState);
 const [repeatSequence, setRepeatSequence] = useState(false)
+
+const [userState, userDispatch] = useReducer(userReducer, userDefaultState);
+
 
 const handleShowScoreModal = () => {
   setShowScoreModal(true);
@@ -177,7 +188,7 @@ useEffect(() => {
   if (!state.readyForUserInput && state.userPattern.length > 0){
     verifyUserMoves();
   }
-},[state.readyForUserInput, verifyUserMoves,  state.userPattern.length])
+},[state.readyForUserInput, verifyUserMoves, state.userPattern.length])
 
 useEffect(() => {
   if (state.gameOver){
@@ -211,7 +222,7 @@ useEffect(() => {
   } else {
     document.body.style.background = "linear-gradient(to right, #FC466B , #3F5EFB)"
   }
-},[state.gameOver, state.strictMode])
+},[state.gameOver, state.strictMode, state.level])
 
 
 useEffect(() => {
@@ -263,7 +274,7 @@ const handleStrictToggle = () =>{
 
 console.log(colors)
     return(
-      <AppContext.Provider value={{state, dispatch, sounds, colors}}>
+      <AppContext.Provider value={{state, dispatch, sounds, colors, userState, userDispatch}}>
         <ScoreboardModal close={handleCloseScoreModal} showModal={showScoreModal}/>
         <LoginModal close={handleCloseLoginModal} showModal={showLoginModal}/>
         <Navbar showScoreModal={handleShowScoreModal} showLoginModal={handleShowLoginModal}/>

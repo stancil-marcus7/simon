@@ -1,9 +1,14 @@
 import React, {useState, useEffect} from 'react';
+import AppContext from '../../context/app-context'
 import axios from '../../axios';
 import { FaAlignRight } from 'react-icons/fa'
 
 const Navbar = React.memo(({showScoreModal, showLoginModal}) => {
+    
     const [loggedIn, setLoggedIn] = useState('false')
+    const [username, setUsername] = useState('')
+    const [regScore, setRegScore] = useState(0);
+    const [strictScore, setStrictScore] = useState(0);
 
     useEffect(() => {
         axios.get("/loggedIn")
@@ -18,6 +23,16 @@ const Navbar = React.memo(({showScoreModal, showLoginModal}) => {
             }, error => {
                 console.log(error, "could not retrieve logged in status")
             })
+    //         .then(() => {
+    //             axios.get("user")
+    //                 .then(response => {
+    //                     const player = response.data;
+    //                     setUsername(player.username || player.facebookDisplayName || player.googleDisplayName || player.nickName)
+    //                     setRegScore(player.regularModeScore)
+    //                     setStrictScore(player.strictModeScore)
+    //                 })
+    //         }  
+    //         )
     })
 
     const [toggleHamburger, setToggleHamburger] = useState(false);
@@ -50,13 +65,18 @@ const Navbar = React.memo(({showScoreModal, showLoginModal}) => {
                 <FaAlignRight/>
             </button>
             
+            
             <ul className={toggleHamburger? "links show-nav" : "links"}>
                 {/* {li.map((oblink, i) => {
                     return (<li key={i}><a style={{cursor: "pointer"}}>{oblink.text}</a></li>)
                 })} */}
+                {loggedIn ?
+                <>
+                <li>{username}</li>
+                <li>{regScore}</li>
+                <li>{strictScore}</li></> : null}
                 {loggedIn ? <li onClick={handleLogOut} style={{cursor: "pointer"}}>Log Out</li> : <li onClick={showLoginModal} style={{cursor: "pointer"}}>Login</li>}
                 <li onClick={showScoreModal} style={{cursor: "pointer"}}>Scoreboard</li>
-                <li onClick={handleCheck}>Check</li>
             </ul>
 
 

@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LoginForm from '../Forms/LoginForm'
-import axios from '../../axios'
+import LoginForm from '../Forms/LoginForm';
+import axios from '../../axios';
+import ErrorMessage from '../ErrorMessages/ErrorMessage';
 
 
 const LoginModal = React.memo(({close, showModal}) => {
@@ -24,8 +25,14 @@ const LoginModal = React.memo(({close, showModal}) => {
         console.log(user)
         axios.post('/login', user)
             .then(response => {
-                console.log(response)
-                close();
+                const authenticated = response.data.authenticated
+                if(authenticated === true){
+                    close();
+                    setError(null)
+                } else {
+                    setError(authenticated);
+                }
+
             }, error => {
                 console.log(error, 'failed to login')
             })
@@ -67,8 +74,10 @@ const LoginModal = React.memo(({close, showModal}) => {
                     email={email}
                     password={password}
                     username={username}
-                    />
+                    /><br/><br/>
+                     {error ? <ErrorMessage message={error}/> : null}
             </section>
+           
         </div>
     )
 })
