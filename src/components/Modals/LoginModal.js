@@ -13,9 +13,6 @@ const LoginModal = React.memo(({close, showModal}) => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     
-
-    
-
     const loginSubmit = e => {
         e.preventDefault();
         const user = {

@@ -8,6 +8,7 @@ const ScoreboardModal = React.memo(({close, showModal}) => {
 
     const [lim, setLim] = useState(10);
     const [players, setPlayers] = useState([]);
+    const [rank, setRank] = useState()
 
     useEffect(() => {
         axios.get(`/players/?lim=${lim}`)
@@ -18,9 +19,20 @@ const ScoreboardModal = React.memo(({close, showModal}) => {
             })
     }, [lim])
 
+    useEffect(() => {
+        axios.get('/rank')
+            .then(response => {
+                setRank(response.data.rank)
+            }, error => {
+                console.log(error);
+            })
+    })
+
+    
     const getMoreScores  = () => {
         setLim(lim + 10);
     }
+
 
     return(
         <div className={modalClass}>
@@ -29,6 +41,8 @@ const ScoreboardModal = React.memo(({close, showModal}) => {
                 <button className="close-button" onClick={close}><FontAwesomeIcon icon="times" size="2x"/></button>
                     <br/><br/>
                     <h1>Check the Scoreboard!</h1>
+                    <br/><br/>
+                    {rank ? <h3>{`Your rank is #${rank} in the world`}</h3> : null}
                     {players ? <table>
                         <thead>
                             <tr>

@@ -13,9 +13,10 @@ import Navbar from './components/Navigation/Navbar'
 import ScoreboardModal from './components/Modals/ScoreboardModal';
 import LoginModal from './components/Modals/LoginModal';
 import { toggleGameOver, updateLevel, turnOnReadyForUserInput, turnOffReadyForUserInput, toggleSrtictMode, resetSimonGame, updateGamePattern, toggleGameStarted, setActiveStyle, emptyUserPattern, updateLastColor, turnOnUserIsWrong, turnOffUserIsWrong, togglePressed } from './actions/actions';
-import axios from './axios'
+import axios from './axios';
 
 const App = React.memo(() => {
+
   const colorsSet = useState(["red","blue","green","yellow"]);
   const soundsSet = useState({
     red: new Audio(red),
@@ -199,7 +200,7 @@ useEffect(() => {
     }, 500)
 
     let mode = 'regular'
-    let score = state.level
+    let score = state.level - 1;
     if (state.strictMode){
       mode = 'strict'
     }
