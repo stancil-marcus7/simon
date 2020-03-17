@@ -23,7 +23,10 @@ const LoginModal = React.memo(({close, showModal}) => {
             password
         }
         console.log(user)
-        axios.post('/login', user)
+        if (username === '' || password === ''){
+            setError('No field can be empty')
+        } else {
+            axios.post('/login', user)
             .then(response => {
                 const authenticated = response.data.authenticated
                 if(authenticated === true){
@@ -32,10 +35,10 @@ const LoginModal = React.memo(({close, showModal}) => {
                 } else {
                     setError(authenticated);
                 }
-
             }, error => {
                 console.log(error, 'failed to login')
             })
+        }
     }
 
     const registrationSubmit = e => {
@@ -44,27 +47,29 @@ const LoginModal = React.memo(({close, showModal}) => {
             email,
             username,
             password
-            
         }
-        if (error){
-            console.log('error')
+
+        if (username === '' || password === '' || email === ''){
+            setError('No field can be empty')
         } else {
             axios.post('/register', user)
             .then(response => {
                 console.log(response)
+                setError(null)
                 close();
             }, error => {
-                console.log(error, 'failed to login')
+                console.log(error)
+                setError('Username or email already associated with account')
             })
         }
-        
     }
 
     return (
         <div className={modalClass}>
             <section className="modal-main">
-                <br></br>
-                <button className="close-button" onClick={close}><FontAwesomeIcon icon="times" size="lg"/></button>
+                <br/><br/>
+                <button className="close-button" onClick={close}><FontAwesomeIcon icon="times" size="2x"/></button>
+                <br/><br/>
                 <LoginForm 
                     loginSubmit={loginSubmit}
                     setUsername={setUsername} 

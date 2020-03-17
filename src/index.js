@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUser, faTimes, faBars, faTable} from '@fortawesome/free-solid-svg-icons'
+import { faFacebookF, faGoogle} from '@fortawesome/free-brands-svg-icons' 
 import 'normalize.css/normalize.css'
 import './styles/styles.scss';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faTimes, faBars} from '@fortawesome/free-solid-svg-icons'
-import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons' 
 
 import * as serviceWorker from './serviceWorker';
 
-library.add(faUser, faTimes, faBars, faFacebookF, faGoogle);
+library.add(faUser, faTimes, faTable, faBars, faFacebookF, faGoogle);
 
 const jsx = (
   <App/>

@@ -28,3 +28,7 @@ p {
   flex-direction: column;
   
 }
+
+.header:hover, .subheader:hover{
+  text-shadow: 0 0 2px #fff;
+}
